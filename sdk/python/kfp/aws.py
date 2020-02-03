@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def use_aws_secret(secret_name='aws-secret', aws_access_key_id_name='AWS_ACCESS_KEY_ID', aws_secret_access_key_name='AWS_SECRET_ACCESS_KEY'):
+def use_aws_secret(secret_name='aws-secret', aws_access_key_id_name='AWS_ACCESS_KEY_ID', aws_secret_access_key_name='AWS_SECRET_ACCESS_KEY', aws_region='AWS_REGION', s3_endpoint='S3_ENDPOINT', aws_endpoint_url='AWS_ENDPOINT_URL', s3_use_https='S3_USE_HTTPS', s3_verify_ssl='S3_VERIFY_SSL'):
     """An operator that configures the container to use AWS credentials.
 
         AWS doesn't create secret along with kubeflow deployment and it requires users
@@ -26,6 +26,11 @@ def use_aws_secret(secret_name='aws-secret', aws_access_key_id_name='AWS_ACCESS_
         data:
           AWS_ACCESS_KEY_ID: BASE64_YOUR_AWS_ACCESS_KEY_ID
           AWS_SECRET_ACCESS_KEY: BASE64_YOUR_AWS_SECRET_ACCESS_KEY
+          AWS_REGION: BASE64_YOUR_AWS_REGION
+          S3_ENDPOINT: BASE64_YOUR_S3_ENDPOINT
+          AWS_ENDPOINT_URL: BASE64_YOUR_AWS_ENDPOINT_URL
+          S3_USE_HTTPS: YOUR_S3_USE_HTTPS
+          S3_VERIFY_SSL: YOUR_S3_VERIFY_SSL
     """
 
     def _use_aws_secret(task):
@@ -50,6 +55,61 @@ def use_aws_secret(secret_name='aws-secret', aws_access_key_id_name='AWS_ACCESS_
                             secret_key_ref=k8s_client.V1SecretKeySelector(
                                 name=secret_name,
                                 key=aws_secret_access_key_name
+                            )
+                        )
+                    )
+                )
+                .add_env_variable(
+                    k8s_client.V1EnvVar(
+                        name='AWS_REGION',
+                        value_from=k8s_client.V1EnvVarSource(
+                            secret_key_ref=k8s_client.V1SecretKeySelector(
+                                name=secret_name,
+                                key=aws_region
+                            )
+                        )
+                    )
+                )
+                .add_env_variable(
+                    k8s_client.V1EnvVar(
+                        name='S3_ENDPOINT',
+                        value_from=k8s_client.V1EnvVarSource(
+                            secret_key_ref=k8s_client.V1SecretKeySelector(
+                                name=secret_name,
+                                key=s3_endpoint
+                            )
+                        )
+                    )
+                )
+                .add_env_variable(
+                    k8s_client.V1EnvVar(
+                        name='AWS_ENDPOINT_URL',
+                        value_from=k8s_client.V1EnvVarSource(
+                            secret_key_ref=k8s_client.V1SecretKeySelector(
+                                name=secret_name,
+                                key=aws_endpoint_url
+                            )
+                        )
+                    )
+                )
+                .add_env_variable(
+                    k8s_client.V1EnvVar(
+                        name='S3_USE_HTTPS',
+                        value_from=k8s_client.V1EnvVarSource(
+                            secret_key_ref=k8s_client.V1SecretKeySelector(
+                                name=secret_name,
+                                key=s3_use_https
+                            )
+                        )
+                    )
+                )
+                .add_env_variable(
+                    k8s_client.V1EnvVar(
+                        name='S3_VERIFY_SSL',
+                        value_from=k8s_client.V1EnvVarSource(
+                            secret_key_ref=k8s_client.V1SecretKeySelector(
+                                name=secret_name,
+                                key=s3_verify_ssl
                             )
                         )
                     )
